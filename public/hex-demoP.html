@@ -42,7 +42,7 @@
         // --- Configuration ---
         const TEXTURE_BG = './images/hex_bg.png';
         const TEXTURE_HEIGHT = './images/hex_height.png';
-        const TEXTURE_CARBON = './Carbon.png';
+        const TEXTURE_CARBON = '/Carbon.png';
 
         // Hex Logic
         const RADIUS = 3.0;
@@ -50,16 +50,9 @@
         const HEX_WIDTH = Math.sqrt(3) * RADIUS;
         const HEX_HEIGHT = 2 * RADIUS;
 
-        // Grid Size - 동적 조정
-        const getGridSize = () => {
-            const width = window.innerWidth;
-            if (width < 1024) return { cols: 12, rows: 10 };
-            if (width < 1920) return { cols: 16, rows: 12 };
-            return { cols: 20, rows: 15 };
-        };
-        const gridSize = getGridSize();
-        const COLS = gridSize.cols;
-        const ROWS = gridSize.rows;
+        // Grid Size
+        const COLS = 20;
+        const ROWS = 15;
 
         // --- Scene ---
         const scene = new THREE.Scene();
@@ -76,18 +69,9 @@
         camera.position.set(0, -8, 50); // Slightly above for depth visibility
         camera.lookAt(0, 0, 0);
 
-        // 성능 감지 및 최적화
-        const getOptimalSettings = () => {
-            const pixelRatio = window.devicePixelRatio || 1;
-            if (pixelRatio > 2) return { ratio: 1.5, shadowQuality: 1024 };
-            if (pixelRatio > 1) return { ratio: 1.2, shadowQuality: 1024 };
-            return { ratio: 1.0, shadowQuality: 1024 };
-        };
-        const settings = getOptimalSettings();
-        
         const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(settings.ratio);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         document.body.appendChild(renderer.domElement);
@@ -99,8 +83,8 @@
         const mainLight = new THREE.DirectionalLight(0xffd700, 4.0);
         mainLight.position.set(0, 15, 40); // Moved to top-center
         mainLight.castShadow = true;
-        mainLight.shadow.mapSize.width = settings.shadowQuality;
-        mainLight.shadow.mapSize.height = settings.shadowQuality;
+        mainLight.shadow.mapSize.width = 2048;
+        mainLight.shadow.mapSize.height = 2048;
         mainLight.shadow.camera.near = 0.1;
         mainLight.shadow.camera.far = 50;
         mainLight.shadow.camera.left = -30;

@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Reservation {
+  id              String   @id @default(cuid())
+  name            String
+  phone           String
+  part            String
+  genre           String
+  referenceText   String?
+  referenceImages String?  // JSON stringified array of URLs
+  reservationDate String
+  reservationTime String
+  status          String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED
+  createdAt       DateTime @default(now())
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  author      String
+  rating      Int
+  text        String
+  imageUrl    String?
+  isAnonymous Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Portfolio {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String
+  genreId     String?
+  genre       Genre?   @relation(fields: [genreId], references: [id])
+  part        String?  // Could be stringified array or comma-separated
+  isEvent     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Genre {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?
+  portfolios  Portfolio[]
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  role         String   @default("MANAGER") // SUPER_ADMIN, MANAGER
+  createdAt    DateTime @default(now())
+}
